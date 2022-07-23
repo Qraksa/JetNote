@@ -13,9 +13,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.jetnote.data.NotesDataSource
 import com.example.jetnote.model.Note
 import com.example.jetnote.screen.NoteScreen
+import com.example.jetnote.screen.NoteViewModel
 import com.example.jetnote.ui.theme.JetNoteTheme
 
 @ExperimentalComposeUiApi
@@ -29,22 +31,26 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colors.background
                 ) {
-                    val notes = remember {
-                        mutableStateListOf<Note>()
-                    }
-                    NoteScreen(notes = notes,
-                        onRemoveNote = {
-                                       notes.remove(it)
-                        },
-                        onAddNote = {
-                            notes.add(it)
-                        })
+                    NotesApp()
                 }
 
             }
         }
     }
 }
+
+@OptIn(ExperimentalComposeUiApi::class)
+@Composable
+fun NotesApp(noteViewModel: NoteViewModel = viewModel()) {
+    val notesList = noteViewModel.getAllNotes()
+
+    NoteScreen(notes = notesList,
+        onRemoveNote = {
+            noteViewModel.removeNote(it)
+        },
+        onAddNote = { noteViewModel.addNote(it) })
+}
+
 
 
 @ExperimentalComposeUiApi
